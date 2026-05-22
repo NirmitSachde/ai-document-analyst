@@ -1,5 +1,12 @@
 # AI Document Analyst
 
+[![Live demo](https://img.shields.io/badge/live-demo-22c55e?logo=render&logoColor=white)](https://ai-doc-analyst.onrender.com/)
+[![MIT License](https://img.shields.io/badge/license-MIT-3b82f6.svg)](./LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11%2B-3776ab?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-4285f4?logo=google&logoColor=white)](https://ai.google.dev/)
+[![Claude](https://img.shields.io/badge/Claude-Sonnet_4.6-d97757)](https://www.anthropic.com/)
+
 A FastAPI web app that takes uploaded business documents (PDFs, text, CSV) and uses an LLM to:
 
 - **Summarize** — overview, key points, named entities, action items, dates
