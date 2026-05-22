@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: ai-doc-analyst
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false   # set manually in the Render dashboard; never committed
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: ANTHROPIC_API_KEY
+        sync: false   # optional; only needed if LLM_PROVIDER=claude
+      - key: CORS_ORIGINS
+        sync: false   # set to your GH Pages URL, e.g. https://yourname.github.io
+      - key: DATABASE_PATH
+        value: /tmp/app.db   # free tier has no persistent disk; SQLite resets on restart
+

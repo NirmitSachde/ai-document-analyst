@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+data/*.db
+data/*.db-journal
+.DS_Store
+*.egg-info/
+
+# Local-only notes that should never be pushed
+PROJECT_REPORT.md
+NOTES.md
+TODO.md

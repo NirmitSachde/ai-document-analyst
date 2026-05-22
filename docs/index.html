@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>AI Document Analyst</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <line x1="9" y1="13" x2="15" y2="13"></line>
+      <line x1="9" y1="17" x2="15" y2="17"></line>
+    </svg>
+    <strong>Document Analyst</strong>
+  </div>
+  <div class="header-right">
+    <span class="status-pill" id="status-pill" aria-live="polite">
+      <span class="dot" id="status-dot"></span>
+      <span id="status-text">Checking…</span>
+    </span>
+    <button class="icon-btn" id="open-settings" title="Settings" aria-label="Open settings">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- Hero / first-touch card -->
+  <section class="card hero" id="hero-card">
+    <h1>Analyze a business document with AI</h1>
+    <p class="muted">Get a structured summary, extracted requirements, natural-language Q&amp;A with citations, and a change-impact diff between two versions of the same document.</p>
+
+    <div class="hero-actions">
+      <div class="action-group">
+        <label class="action-label" for="sample-select">Try a sample</label>
+        <div class="action-row">
+          <select id="sample-select" class="input"></select>
+          <button class="btn primary" id="btn-load-sample">
+            <span class="btn-label">Load</span>
+            <span class="spinner" hidden></span>
+          </button>
+        </div>
+        <small class="muted" id="sample-help">Pre-loaded business docs to demo the app without uploading anything.</small>
+      </div>
+
+      <div class="divider"><span>or</span></div>
+
+      <div class="action-group">
+        <label class="action-label" for="file-input">Upload your own</label>
+        <form id="upload-form" class="action-row">
+          <input type="file" id="file-input" class="input file" accept=".pdf,.txt,.md,.csv,.log,.json" required />
+          <button type="submit" class="btn primary">
+            <span class="btn-label">Upload</span>
+            <span class="spinner" hidden></span>
+          </button>
+        </form>
+        <small class="muted">PDF, text, markdown, CSV, JSON, or log files up to 20 MB.</small>
+      </div>
+    </div>
+
+    <div class="usage-notice">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      <span>This demo runs on Google's <strong>free Gemini API tier</strong>. Requests are throttled to <strong>12 per minute</strong>. The backend goes to sleep after 15&nbsp;minutes of inactivity — your first request may take up to 30 seconds to wake it.</span>
+    </div>
+  </section>
+
+  <!-- Active document -->
+  <section class="card" id="doc-section" hidden>
+    <div class="card-header">
+      <h2>Active document</h2>
+      <button class="btn ghost" id="btn-deselect">Clear</button>
+    </div>
+    <div id="doc-meta" class="doc-meta"></div>
+    <details>
+      <summary>Preview (first 1500 chars)</summary>
+      <pre id="doc-preview"></pre>
+    </details>
+  </section>
+
+  <!-- Actions -->
+  <section class="card" id="actions-section" hidden>
+    <h2>Analyze</h2>
+    <div class="action-grid">
+      <button class="btn" id="btn-summary">
+        <span class="btn-label">Summarize</span>
+        <span class="spinner" hidden></span>
+      </button>
+      <button class="btn" id="btn-requirements">
+        <span class="btn-label">Extract requirements</span>
+        <span class="spinner" hidden></span>
+      </button>
+      <label class="toggle">
+        <input type="checkbox" id="refresh-toggle" />
+        <span>Force re-run (skip cache)</span>
+      </label>
+    </div>
+
+    <form id="ask-form" class="ask-row">
+      <input type="text" id="question-input" class="input grow" placeholder="Ask a question about the document — e.g. &quot;What is the WMS push latency target?&quot;" required />
+      <button type="submit" class="btn primary">
+        <span class="btn-label">Ask</span>
+        <span class="spinner" hidden></span>
+      </button>
+    </form>
+  </section>
+
+  <!-- Compare -->
+  <section class="card" id="compare-section" hidden>
+    <h2>Change impact (compare versions)</h2>
+    <p class="muted small">Pick an older "before" and a newer "after". Both must already be loaded.</p>
+    <form id="compare-form" class="compare-row">
+      <label class="field"><span>Before</span><select id="before-select" class="input"></select></label>
+      <label class="field"><span>After</span><select id="after-select" class="input"></select></label>
+      <button type="submit" class="btn primary">
+        <span class="btn-label">Compare</span>
+        <span class="spinner" hidden></span>
+      </button>
+    </form>
+  </section>
+
+  <!-- Results -->
+  <section class="card" id="results-section" hidden>
+    <div class="card-header">
+      <h2>Results</h2>
+      <button class="btn ghost" id="btn-clear-results">Clear</button>
+    </div>
+    <div id="results"></div>
+  </section>
+
+  <!-- Documents list -->
+  <section class="card">
+    <h2>Documents</h2>
+    <div id="doc-list"></div>
+  </section>
+
+  <!-- History -->
+  <section class="card">
+    <div class="card-header">
+      <h2>History</h2>
+      <button class="btn ghost" id="btn-refresh-history">Refresh</button>
+    </div>
+    <div id="history-list"></div>
+  </section>
+
+</main>
+
+<!-- Settings dialog -->
+<dialog id="settings-dialog" class="dialog">
+  <div class="dialog-head">
+    <h3>Settings</h3>
+    <button class="icon-btn" id="close-settings" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+  <form id="settings-form" class="dialog-body">
+    <div class="setting-row">
+      <label class="setting-label" for="backend-url">Backend URL</label>
+      <input type="url" id="backend-url" class="input" placeholder="https://your-backend.example.com" />
+      <small class="muted small">Leave empty to use the same origin (default for the hosted demo).</small>
+    </div>
+
+    <div class="setting-row">
+      <label class="setting-label" for="user-api-key">Your Gemini API key <span class="badge">optional</span></label>
+      <input type="password" id="user-api-key" class="input" autocomplete="off" placeholder="AIza…" />
+      <small class="muted small">
+        Hit Gemini's free-tier quota? Paste your own key (get one at
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com</a>).
+        It's stored only in <em>your</em> browser's localStorage, sent over HTTPS,
+        and never logged.
+      </small>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn ghost" id="reset-settings">Reset</button>
+      <button type="submit" class="btn primary">Save</button>
+    </div>
+  </form>
+  <div class="dialog-meta">
+    <span class="muted small">Provider: <code id="provider-name">—</code></span>
+    <span class="muted small">Model: <code id="provider-model">—</code></span>
+  </div>
+</dialog>
+
+<!-- Toasts -->
+<div id="toasts" class="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<footer class="site-footer">
+  <span>AI Document Analyst · powered by Google Gemini · free-tier demo.
+  <a href="https://github.com/NirmitSachde/ai-document-analyst" target="_blank" rel="noopener">View source</a>.</span>
+</footer>
+
+<script src="./app.js"></script>
+</body>
+</html>
