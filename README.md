@@ -101,7 +101,7 @@ You can also bake a default backend URL into the page at deploy time by adding t
 | `LLM_PROVIDER`      | `claude`              | `claude` or `gemini`                           |
 | `ANTHROPIC_API_KEY` | (required for Claude) | Your Anthropic API key                         |
 | `GEMINI_API_KEY`    | (required for Gemini) | Your Google AI Studio key                      |
-| `GEMINI_MODEL`      | `gemini-2.0-flash`    | Override to `gemini-1.5-pro` if you prefer it  |
+| `GEMINI_MODEL`      | `gemini-2.5-flash`    | Override to e.g. `gemini-3.1-flash-lite` for higher daily limits |
 | `CORS_ORIGINS`      | (empty)               | Comma-separated extra origins. `*.github.io` is allowed by default. |
 | `DATABASE_PATH`     | `./data/app.db`       | SQLite file path (relative paths resolve to project root) |
 | `MAX_UPLOAD_MB`     | `20`                  | Reject uploads larger than this                |
@@ -138,3 +138,7 @@ Interactive docs at `/docs` on the backend.
 - For Gemini, structured outputs use `response_mime_type=application/json` + `response_schema=<PydanticModel>`.
 - Documents over ~200K characters are truncated before being sent to the model (cap in `app/providers/base.py:MAX_DOC_CHARS`).
 - Structured outputs are enforced via Pydantic validation on every response. Responses that don't validate raise a 502.
+
+## License
+
+[MIT](./LICENSE) © 2026 Nirmit Sachde
